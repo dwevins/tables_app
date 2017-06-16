@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>table 1</title>
+    </head>
+    <script src="/socket.io/socket.io.js" charset="utf-8"></script>
+    <script type="text/javascript">
+        const socket = io.connect('', {query: 'client=table1'});
+
+        window.onload = function() {
+            const status = document.querySelector('.status');
+            const btn = document.querySelector('button');
+            const firstName = document.querySelector('.first-name');
+            const lastName = document.querySelector('.last-name');
+            const company = document.querySelector('.company');
+
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                socket.emit('table open', 'table1');
+                status.innerText = 'open';
+
+                firstName.innerText = '';
+                lastName.innerText = '';
+                company.innerText = '';
+            })
+
+            socket.on('table busy', function(fields) {
+                status.innerText = 'busy';
+                firstName.innerText = fields.firstName;
+                lastName.innerText = fields.lastName;
+                company.innerText = fields.company;
+            })
+        }
+    </script>
+
+    <body>
+        <h1>table 1</h1>
+        <p>table 1 is <span class="status">open</span></p>
+        <button class="make-open">make open</button>
+
+        <p>first name: <span class="first-name"></span></p>
+        <p>last name: <span class="last-name"></span></p>
+        <p>company: <span class="company"></span></p>
+    </body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>waiter</title>
+    </head>
+    <script src="/socket.io/socket.io.js" charset="utf-8"></script>
+    <script type="text/javascript">
+        const socket = io.connect('', {query: 'client=waiter'});
+
+        window.onload = function() {
+            const buttons = document.querySelectorAll('button');
+            const statusEls = document.querySelectorAll('.status');
+
+            buttons.forEach(function(button){
+                button.addEventListener('click', function() {
+                    const firstName = document.querySelector('[name="first-name"]');
+                    const lastName = document.querySelector('[name="last-name"]');
+                    const company = document.querySelector('[name="company"]');
+
+                    const fields = {
+                        firstName: firstName.value,
+                        lastName: lastName.value,
+                        company: company.value
+                    }
+
+                    socket.emit('table busy', fields, button.getAttribute('data'));
+                    document.querySelector(`.${button.getAttribute('data')}`).innerText = 'busy';
+
+                    firstName.value = '';
+                    lastName.value = '';
+                    company.value = '';
+
+                    return false;
+                })
+            })
+            socket.on('table open', function(table) {
+                document.querySelector(`.${table}`).innerText = 'open';
+            })
+
+        }
+    </script>
+    <body>
+        <h1>waiter</h1>
+        <p>table 1 is <span class="status table1">open</span></p>
+        <p>table 2 is <span class="status table2">open</span></p>
+        <input type="text" name="first-name" value="" placeholder="first name">
+        <input type="text" name="last-name" value="" placeholder="last name">
+        <input type="text" name="company" value="" placeholder="company">
+        <button data='table1' class="make-busy">assign table 1</button>
+        <button data='table2' class="make-busy">assign table 2</button>
+    </body>
+</html>
